@@ -29,14 +29,11 @@ export const TaskColumn: React.FC<Props> = ({
   const { data, isLoading, isError } = useQuery(
     ["tasks", status, userId, groupBy, responsibleId],
     async () => await fetchTasks(userId, status, groupBy, responsibleId),
-    {
-      keepPreviousData: true,
-    },
   );
 
   return (
     <div className={cn("flex flex-col w-full", className)}>
-      <h2 className="font-semibold text-2xl">{statusName}</h2>
+      <h2 className="font-semibold text-2xl whitespace-nowrap">{statusName}</h2>
       <div className="mt-4">
         <TaskModal defaultStatus={status}>
           <Button className="w-full mb-4 duration-300 hover:bg-accent hover:text-white">

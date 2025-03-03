@@ -48,7 +48,7 @@ export const Task: React.FC<Props> = ({
           className,
         )}
       >
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between gap-4 mb-2">
           <h3 className={cn("font-semibold text-lg", getStatusClass())}>
             {title}
           </h3>

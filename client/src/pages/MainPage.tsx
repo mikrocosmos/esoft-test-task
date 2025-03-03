@@ -56,7 +56,7 @@ function MainPage() {
           className="ring-1 ring-white mt-4"
         />
       </div>
-      <div className="flex justify-between gap-4 bg-stone-700 px-8 py-4 shadow-2xl rounded-xl mt-4">
+      <div className="flex justify-between gap-4 bg-stone-700 px-8 py-4 shadow-2xl rounded-xl mt-4 overflow-x-auto">
         {Array.from(statusMap.entries()).map((status) => (
           <TaskColumn
             groupBy={groupBy}
