@@ -1,0 +1,53 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-musl-arm64-openssl-3.0.x", "linux-musl-openssl-3.0.x", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("MYSQL_URL")
+}
+
+model User {
+  id               Int      @id @default(autoincrement())
+  name             String
+  surname          String
+  patronym         String?
+  login            String   @unique
+  password         String
+  supervisor       User?    @relation("Supervisor", fields: [supervisorId], references: [id])
+  supervisorId     Int?
+  subordinates     User[]   @relation("Supervisor")
+  createdTasks     Task[]   @relation("Creator")
+  responsibleTasks Task[]   @relation("Responsible")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Task {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String?
+  deadline      DateTime
+  priority      Priority
+  status        Status   @default(TODO)
+  creator       User     @relation("Creator", fields: [creatorId], references: [id])
+  creatorId     Int
+  responsible   User?    @relation("Responsible", fields: [responsibleId], references: [id])
+  responsibleId Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Status {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELED
+}
