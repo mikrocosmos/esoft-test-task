@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button.tsx";
 import axios from "axios";
 import { DialogClose } from "@/components/ui/dialog.tsx";
 import { fetchSubordinates } from "@/lib/fetchSubordinates.ts";
+import { serverAddress } from "@/constants/serverAddress.ts";
 
 interface Props {
   id: number;
@@ -52,7 +53,7 @@ export const EditTaskForm: React.FC<Props> = ({
 
   const editTask = async (data: TTaskSchema) => {
     const { data: editedTask } = await axios.put<ITask>(
-      `http://localhost:3000/tasks/${id}`,
+      `${serverAddress}/tasks/${id}`,
       data,
     );
     return editedTask;

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button.tsx";
 import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router";
 import Cookies from "js-cookie";
+import { serverAddress } from "@/constants/serverAddress.ts";
 
 interface Props {
   className?: string;
@@ -29,7 +30,7 @@ export const LoginForm: React.FC<Props> = ({ className }) => {
 
   const onSubmit = async (data: TLoginFormSchema) => {
     try {
-      const response = await axios.post("http://localhost:3000/login", data);
+      const response = await axios.post(`${serverAddress}/login`, data);
       if (!response.data.success) {
         setError(response.data.message);
         return;

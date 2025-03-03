@@ -1,0 +1,13 @@
+{
+  "name": "esoft-test-task",
+  "packageManager": "yarn@4.7.0",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently \"cd client && yarn dev\" \"cd server && yarn dev\"",
+    "build": "concurrently \"cd client && yarn build\" \"cd server && yarn build\"",
+    "start": "concurrently \"cd client && yarn start\" \"cd server && yarn start\""
+  },
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

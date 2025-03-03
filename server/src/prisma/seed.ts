@@ -12,10 +12,8 @@ async function up() {
 }
 
 async function down() {
-  await prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 0;`;
-  await prisma.$executeRaw`TRUNCATE TABLE task;`;
-  await prisma.$executeRaw`TRUNCATE TABLE user;`;
-  await prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`;
+  await prisma.$executeRaw`TRUNCATE TABLE "Task" RESTART IDENTITY CASCADE;`;
+  await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE;`;
 }
 
 async function main() {

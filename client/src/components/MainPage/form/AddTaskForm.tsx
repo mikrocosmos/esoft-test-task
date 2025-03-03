@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button.tsx";
 import axios from "axios";
 import { DialogClose } from "@/components/ui/dialog.tsx";
 import { fetchSubordinates } from "@/lib/fetchSubordinates.ts";
+import { serverAddress } from "@/constants/serverAddress.ts";
 
 interface Props {
   defaultStatus: Status;
@@ -55,10 +56,7 @@ export const AddTaskForm: React.FC<Props> = ({ className, defaultStatus }) => {
   });
 
   const createTask = async (task: TTaskSchema) => {
-    const { data } = await axios.post<ITask>(
-      "http://localhost:3000/tasks",
-      task,
-    );
+    const { data } = await axios.post<ITask>(`${serverAddress}/tasks`, task);
     return data;
   };
 

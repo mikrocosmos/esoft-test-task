@@ -32,12 +32,6 @@ export interface ITask {
   updatedAt: Date;
 }
 
-export type TUserWithRelations = User & {
-  supervisor: User;
-  responsibleTasks: ITask[];
-  subordinates: User[];
-};
-
 export type Session = {
   id: number;
   login: string;

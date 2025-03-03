@@ -1,5 +1,6 @@
 import { ITask, Status } from "@/@types/prisma.ts";
 import axios from "axios";
+import { serverAddress } from "@/constants/serverAddress.ts";
 
 export async function fetchTasks(
   userId: number,
@@ -8,7 +9,7 @@ export async function fetchTasks(
   responsibleId?: number,
 ) {
   const { data } = await axios.get<ITask[]>(
-    `http://localhost:3000/tasks?status=${status}&userId=${userId}&groupBy=${groupBy}&responsibleId=${responsibleId}`,
+    `${serverAddress}/tasks?status=${status}&userId=${userId}&groupBy=${groupBy}&responsibleId=${responsibleId}`,
   );
   return data;
 }

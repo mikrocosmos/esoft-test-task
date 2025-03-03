@@ -13,156 +13,220 @@ app.use(cors());
 
 const jsonParser = bodyParser.json();
 
-app.get("/me", jsonParser, async (req: Request, res: Response) => {
-  const token = req.headers.authorization;
-
-  if (!token) {
-    res.status(401).send({
-      success: false,
-      message: "Нет токена",
-    });
-    return;
-  }
-
-  const user = await getSession(token);
-
-  res.status(200).send(user);
-});
-
-app.get("/tasks", async (req: Request, res: Response) => {
-  const { status, userId, groupBy, responsibleId } = req.query;
-
-  const tasks = await getTasks(
-    status as Status,
-    Number(userId),
-    String(groupBy),
-    Number(responsibleId),
-  );
-
-  res.status(200).send(tasks);
-});
-
-app.get("/tasks/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const task = await getTask(+id);
-  res.status(200).send(task);
-});
-
-app.get("/users/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { subordinates } = req.query;
-  if (subordinates) {
-    const subs = await getUserSubordinates(+id);
-    if (!subs) {
-      res.status(204).send({
-        success: true,
-        message: "У пользователя нет подчинённых",
-      });
-    }
-    res.status(200).send(subs);
-    return;
-  }
-});
-
-app.post("/tasks", jsonParser, async (req: Request, res: Response) => {
-  const {
-    title,
-    description,
-    priority,
-    status,
-    creatorId,
-    responsibleId,
-    deadline,
-  } = req.body;
-
-  const task = await createTask(
-    title,
-    priority,
-    status,
-    creatorId,
-    deadline,
-    description,
-    Number(responsibleId),
-  );
-
-  res.status(201).send({
-    success: true,
-    message: "Задача успешно создана",
-    task,
-  });
-});
-
-app.post("/login", jsonParser, async (req: Request, res: Response) => {
-  const { login, password } = req.body;
-
-  if (!login || !password) {
-    res.status(400).send({
-      success: false,
-      message: "Некорректные данные",
-    });
-  }
-
-  const result = await loginRoute(login, password);
-
-  res.status(result.status).json({
-    success: result.success,
-    message: result.message,
-    token: result.token,
-  });
-});
-
-app.post("/register", jsonParser, async (req: Request, res: Response) => {
-  const { login, password, name, surname, patronym, supervisorId } = req.body;
-
-  if (!login || !password || !name || !surname) {
-    res.status(400).send({
-      success: false,
-      message: "Некорректные данные",
-    });
-  }
-
-  const result = await register({
-    login,
-    password,
-    name,
-    surname,
-    patronym,
-    supervisorId,
-  });
-
-  res.status(result.status).json({
-    success: result.success,
-    message: result.message,
-    token: result.token,
-  });
-});
-
-app.put("/tasks/:id", jsonParser, async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const {
-    title,
-    description,
-    priority,
-    status,
-    creatorId,
-    responsibleId,
-    deadline,
-  } = req.body;
-
+app.get("/api/me", jsonParser, async (req: Request, res: Response) => {
   try {
-    const task = await editTask(
-      +id,
+    const token = req.headers.authorization;
+
+    if (!token) {
+      res.status(401).send({
+        success: false,
+        message: "Нет токена",
+      });
+      return;
+    }
+
+    const user = await getSession(token);
+
+    res.status(200).send(user);
+  } catch (err) {
+    console.error(["GET /me"], err);
+    res.status(500).send({
+      success: false,
+      message: "[GET /me] Error",
+    });
+  }
+});
+
+app.get("/api/tasks", async (req: Request, res: Response) => {
+  try {
+    const { status, userId, groupBy, responsibleId } = req.query;
+
+    const tasks = await getTasks(
+      status as Status,
+      Number(userId),
+      String(groupBy),
+      Number(responsibleId),
+    );
+
+    res.status(200).send(tasks);
+  } catch (err) {
+    console.error(["GET /tasks"], err);
+    res.status(500).send({
+      success: false,
+      message: "[GET /tasks] Error",
+    });
+  }
+});
+
+app.get("/api/tasks/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const task = await getTask(+id);
+    res.status(200).send(task);
+  } catch (err) {
+    console.error(["GET /tasks/:id"], err);
+    res.status(500).send({
+      success: false,
+      message: "[GET /tasks/:id] Error",
+    });
+  }
+});
+
+app.get("/api/users/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { subordinates } = req.query;
+    if (subordinates) {
+      const subs = await getUserSubordinates(+id);
+      if (!subs) {
+        res.status(204).send({
+          success: true,
+          message: "У пользователя нет подчинённых",
+        });
+      }
+      res.status(200).send(subs);
+      return;
+    }
+  } catch (err) {
+    console.error(["GET /users/:id"], err);
+    res.status(500).send({
+      success: false,
+      message: "[GET /users/:id] Error",
+    });
+  }
+});
+
+app.post("/api/tasks", jsonParser, async (req: Request, res: Response) => {
+  try {
+    const {
       title,
       description,
       priority,
       status,
-      +creatorId,
-      +responsibleId,
+      creatorId,
+      responsibleId,
       deadline,
+    } = req.body;
+
+    const task = await createTask(
+      title,
+      priority,
+      status,
+      creatorId,
+      deadline,
+      description,
+      Number(responsibleId),
     );
-    res.status(200).send(task);
+
+    res.status(201).send({
+      success: true,
+      message: "Задача успешно создана",
+      task,
+    });
   } catch (err) {
-    console.log(err);
+    console.error(["POST /tasks"], err);
+    res.status(500).send({
+      success: false,
+      message: "[POST /tasks] Error",
+    });
+  }
+});
+
+app.post("/api/login", jsonParser, async (req: Request, res: Response) => {
+  try {
+    const { login, password } = req.body;
+
+    if (!login || !password) {
+      res.status(400).send({
+        success: false,
+        message: "Некорректные данные",
+      });
+    }
+
+    const result = await loginRoute(login, password);
+
+    res.status(result.status).json({
+      success: result.success,
+      message: result.message,
+      token: result.token,
+    });
+  } catch (err) {
+    console.error(["POST /login"], err);
+    res.status(500).send({
+      success: false,
+      message: "[POST /login] Error",
+    });
+  }
+});
+
+app.post("/api/register", jsonParser, async (req: Request, res: Response) => {
+  try {
+    const { login, password, name, surname, patronym, supervisorId } = req.body;
+
+    if (!login || !password || !name || !surname) {
+      res.status(400).send({
+        success: false,
+        message: "Некорректные данные",
+      });
+    }
+
+    const result = await register({
+      login,
+      password,
+      name,
+      surname,
+      patronym,
+      supervisorId,
+    });
+
+    res.status(result.status).json({
+      success: result.success,
+      message: result.message,
+      token: result.token,
+    });
+  } catch (err) {
+    console.error(["POST /register"], err);
+    res.status(500).send({
+      success: false,
+      message: "[POST /register] Error",
+    });
+  }
+});
+
+app.put("/api/tasks/:id", jsonParser, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const {
+      title,
+      description,
+      priority,
+      status,
+      creatorId,
+      responsibleId,
+      deadline,
+    } = req.body;
+
+    try {
+      const task = await editTask(
+        +id,
+        title,
+        description,
+        priority,
+        status,
+        +creatorId,
+        +responsibleId,
+        deadline,
+      );
+      res.status(200).send(task);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({
+        success: false,
+        message: "[PUT /tasks/:id] Error",
+      });
+    }
+  } catch (err) {
+    console.error(["PUT /tasks/:id"], err);
     res.status(500).send({
       success: false,
       message: "[PUT /tasks/:id] Error",
