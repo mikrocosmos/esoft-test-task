@@ -1,1 +1,1 @@
-export const serverAddress = "http://localhost:3000/api";
+export const serverAddress = "https://esoft-test-task-backend.vercel.app/";

@@ -9,8 +9,14 @@ import { createTask, editTask, getTask, getTasks } from "./routes/tasks.route";
 import { getUserSubordinates } from "./routes/users.route";
 
 const app: Express = express();
-app.use(cors());
-
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://esoft-test-task-frontend.vercel.app",
+    ],
+  }),
+);
 const jsonParser = bodyParser.json();
 
 app.get("/api/me", jsonParser, async (req: Request, res: Response) => {
