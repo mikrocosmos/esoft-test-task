@@ -47,6 +47,7 @@ export const EditTaskForm: React.FC<Props> = ({
   status,
   className,
 }) => {
+  const [openDeleteConfirm, setOpenDeleteConfirm] = React.useState(false);
   deadline = new Date(String(deadline));
 
   const user = useQuery<Session>("user");
@@ -101,6 +102,15 @@ export const EditTaskForm: React.FC<Props> = ({
       mutate(data);
     } catch (error) {
       console.error("Не удалось добавить задачу:", error);
+    }
+  };
+
+  const onDelete = async () => {
+    try {
+      await axios.delete(`${serverAddress}/tasks/${id}`);
+      queryClient.invalidateQueries(["tasks"]);
+    } catch (error) {
+      console.error("Не удалось удалить задачу:", error);
     }
   };
 
@@ -233,17 +243,52 @@ export const EditTaskForm: React.FC<Props> = ({
             Ответственный: {user.data.surname} {user.data.name}
           </p>
         )}
-
-        {form.formState.isValid ? (
-          <DialogClose asChild>
-            <Button type="submit" className="hover:bg-accent hover:text-white">
+        <div className="flex gap-4 w-full justify-between">
+          <Button
+            onClick={() => setOpenDeleteConfirm(!openDeleteConfirm)}
+            type="button"
+            className="bg-transparent w-full text-white border-2 border-white hover:bg-red-500 hover:text-white hover:border-red-500"
+          >
+            Удалить
+          </Button>
+          {form.formState.isValid ? (
+            <DialogClose asChild>
+              <Button
+                type="submit"
+                className="hover:bg-accent hover:text-white w-full"
+              >
+                Сохранить
+              </Button>
+            </DialogClose>
+          ) : (
+            <Button
+              type="submit"
+              className="hover:bg-accent hover:text-white w-full"
+            >
               Сохранить
             </Button>
-          </DialogClose>
-        ) : (
-          <Button type="submit" className="hover:bg-accent hover:text-white">
-            Сохранить
-          </Button>
+          )}
+        </div>
+        {openDeleteConfirm && (
+          <div>
+            <p>Вы точно хотите удалить задачу? Это действие необратимо</p>
+            <div className="flex gap-4 items-center mt-2">
+              <DialogClose asChild>
+                <Button
+                  onClick={onDelete}
+                  className="bg-transparent text-white border-2 border-white hover:bg-red-500 hover:text-white hover:border-red-500"
+                >
+                  Да
+                </Button>
+              </DialogClose>
+              <Button
+                onClick={() => setOpenDeleteConfirm(false)}
+                className="hover:bg-accent hover:text-white"
+              >
+                Нет
+              </Button>
+            </div>
+          </div>
         )}
       </form>
     </Form>

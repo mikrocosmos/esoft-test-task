@@ -5,7 +5,13 @@ import { loginRoute } from "./routes/login.route";
 import { getSession } from "./routes/session.route";
 import { register } from "./routes/register.route";
 import { Status } from "@prisma/client";
-import { createTask, editTask, getTask, getTasks } from "./routes/tasks.route";
+import {
+  createTask,
+  deleteTask,
+  editTask,
+  getTask,
+  getTasks,
+} from "./routes/tasks.route";
 import { getUserSubordinates } from "./routes/users.route";
 
 const app: Express = express();
@@ -236,6 +242,20 @@ app.put("/api/tasks/:id", jsonParser, async (req: Request, res: Response) => {
     res.status(500).send({
       success: false,
       message: "[PUT /tasks/:id] Error",
+    });
+  }
+});
+
+app.delete("/api/tasks/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const task = await deleteTask(+id);
+    res.status(200).send(task);
+  } catch (err) {
+    console.error(["DELETE /tasks/:id"], err);
+    res.status(500).send({
+      success: false,
+      message: "[DELETE /tasks/:id] Error",
     });
   }
 });

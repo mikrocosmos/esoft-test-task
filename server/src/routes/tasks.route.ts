@@ -171,3 +171,21 @@ export async function editTask(
     },
   });
 }
+
+export async function deleteTask(id: number) {
+  const findTask = await prisma.task.findFirst({
+    where: { id },
+  });
+  if (!findTask) {
+    return {
+      success: false,
+      message: "Задача не найдена",
+      status: 404,
+    };
+  }
+  return prisma.task.delete({
+    where: {
+      id,
+    },
+  });
+}
